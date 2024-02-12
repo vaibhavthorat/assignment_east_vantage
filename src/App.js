@@ -2,19 +2,16 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 const App= () => {
-  const [userData, setUserData] = useState({ fullName: '', email: ''})
+  const [username, setUsername] = useState('')
+  const [useremail, setUseremail] = useState('')
   const fetchUser = async () => {
-    try {
       const response = await axios.get('https://randomuser.me/api');
-      const { results } = response.data;
-        const { name, email } = results[0];
-        setUserData({ fullName:`${name.first} ${name.last}`, email });
-        localStorage.setItem('newuser', JSON.stringify({ fullName:`${name.first} ${name.last}`, email  }));
-    } catch (error) {
-      console.error('Something is Wrong:', error);
+      const data = await response.data;
+        const { name, email } = data.results[0];
+        setUsername(`${name.first} ${name.last}`);
+        setUseremail(email);
+        localStorage.setItem('newuser', JSON.stringify({ UserName:`${name.first} ${name.last}`, email  }));
     }
-  };
-
   useEffect(() => {
     fetchUser();
   }, []);
@@ -27,10 +24,10 @@ const App= () => {
   return (
     <div>
       <h1>Fetch Random Users</h1>
-      {userData ? (
+      {user ? (
         <div>
-          <p>Full Name: {userData.fullName}</p>
-          <p>Email: {userData.email}</p>
+          <p>Full Name: {user.fullName}</p>
+          <p>Email: {user.email}</p>
         </div>
       ) : (
         <p>Loading...</p>
