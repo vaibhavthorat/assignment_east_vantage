@@ -1,25 +1,42 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
-function App() {
+const App= () => {
+  const [userData, setUserData] = useState({ fullName: '', email: ''})
+  const fetchUser = async () => {
+    try {
+      const response = await axios.get('https://randomuser.me/api');
+      const { results } = response.data;
+        const { name, email } = results[0];
+        setUserData({ fullName:`${name.first} ${name.last}`, email });
+        localStorage.setItem('newuser', JSON.stringify({ fullName:`${name.first} ${name.last}`, email  }));
+    } catch (error) {
+      console.error('Something is Wrong:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchUser();
+  }, []);
+
+  const handleRefresh = () => {
+    localStorage.removeItem('newuser');
+    fetchUser();
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <h1>Fetch Random Users</h1>
+      {userData ? (
+        <div>
+          <p>Full Name: {userData.fullName}</p>
+          <p>Email: {userData.email}</p>
+        </div>
+      ) : (
+        <p>Loading...</p>
+      )}
+      <button onClick={handleRefresh}>Refresh</button>
     </div>
   );
-}
-
+};
 export default App;
